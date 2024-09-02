@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch name if needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Deploy to Server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          scp -o StrictHostKeyChecking=no -i $DEPLOY_KEY /home/ahad/Projects/Spring_Learning/Spring Learning/target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/
+          ssh -o StrictHostKeyChecking=no -i $DEPLOY_KEY root@134.209.148.84 'systemctl restart your-application'
