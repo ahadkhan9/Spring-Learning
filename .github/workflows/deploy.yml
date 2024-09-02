@@ -17,17 +17,18 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
+          distribution: 'temurin'  # Added this to avoid the 'distribution' error
 
       - name: Build with Maven
         run: mvn clean package
 
+      - name: List files in target directory
+        run: ls -l target/  # Added this to verify the JAR file is present
+
       - name: Deploy to Server
         env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SECRET }}
         run: |
-          # Ensure the JAR file is created and available
-          ls -l target/
-
           # Copy the JAR file to the server
           scp -o StrictHostKeyChecking=no -i "$DEPLOY_KEY" target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/Spring-Learning/
 
