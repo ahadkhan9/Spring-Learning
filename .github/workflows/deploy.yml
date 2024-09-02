@@ -17,20 +17,25 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'temurin'  # Added this to avoid the 'distribution' error
+          distribution: 'temurin'  # Ensure that the correct JDK distribution is used
 
       - name: Build with Maven
         run: mvn clean package
 
       - name: List files in target directory
-        run: ls -l target/  # Added this to verify the JAR file is present
+        run: ls -l target/  # Verify that the JAR file is present
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 134.209.148.84 >> ~/.ssh/known_hosts  # Add server to known hosts
 
       - name: Deploy to Server
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
           # Copy the JAR file to the server
-          scp -vvv -o StrictHostKeyChecking=no -i "$DEPLOY_KEY" target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/Spring-Learning/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/Spring-Learning/
 
           # Execute the deploy script on the server
-          ssh -vvv -o StrictHostKeyChecking=no -i "$DEPLOY_KEY" root@134.209.148.84 'cd /root/projects/Spring-Learning && ./deploy.sh'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@134.209.148.84 'cd /root/projects/Spring-Learning && ./deploy.sh'
