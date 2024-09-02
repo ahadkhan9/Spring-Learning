@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class HelloWorldController {
 	
 	@GetMapping(path = "/hello-world")
@@ -18,5 +18,5 @@ public class HelloWorldController {
 	public HelloWorldBean helloWorldBean() {
 		return new HelloWorldBean("Hello World"); 
 	}
-	
+
 }
