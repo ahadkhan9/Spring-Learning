@@ -19,15 +19,18 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-
       - name: Build with Maven
         run: mvn clean package
 
+      - name: Check SSH Key
+        run: |
+          echo "${{ secrets.DEPLOY_SECRET }}" > deploy_key
+          chmod 600 deploy_key
+          ls -l deploy_key
+
       - name: Deploy to Server
         env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_SECRET }}
+          DEPLOY_KEY: deploy_key
         run: |
-          echo "Deploy Secret: ${{ secrets.DEPLOY_SECRET }}"
-
           scp -o StrictHostKeyChecking=no -i "$DEPLOY_KEY" "/home/ahad/Projects/Spring_Learning/Spring Learning/target/restful-web-services-0.0.1-SNAPSHOT.jar" root@134.209.148.84:/root/projects/Spring-Learning/target/
           ssh -o StrictHostKeyChecking=no -i "$DEPLOY_KEY" root@134.209.148.84 'cd /root/projects/Spring-Learning/target && ./deploy.sh'
