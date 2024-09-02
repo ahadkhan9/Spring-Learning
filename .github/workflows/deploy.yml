@@ -25,5 +25,8 @@ jobs:
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          scp -o StrictHostKeyChecking=no -i $DEPLOY_KEY /home/ahad/Projects/Spring_Learning/Spring Learning/target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/
-          ssh -o StrictHostKeyChecking=no -i $DEPLOY_KEY root@134.209.148.84 'systemctl restart your-application'
+          scp -o StrictHostKeyChecking=no -i $DEPLOY_KEY target/restful-web-services-0.0.1-SNAPSHOT.jar root@134.209.148.84:/root/projects/Spring-Learning/
+          ssh -o StrictHostKeyChecking=no -i $DEPLOY_KEY root@134.209.148.84 'cd /root/projects/Spring-Learning/target && ./deploy.sh'
+
+
+
